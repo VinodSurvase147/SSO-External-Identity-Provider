@@ -1,0 +1,114 @@
+
+
+OAuth 2.0 supports several different flows (or grants), each designed for specific use cases and application types. Here are the main OAuth 2.0 flows:
+
+1. Authorization Code Flow
+Use Case: Server-side web applications.
+- Description: This flow is used by applications that can securely store a client secret. It involves redirecting the user to the authorization server to obtain an authorization code, which is then exchanged for an access token.
+- Steps:
+  1. User is redirected to the authorization server.
+  2. User logs in and consents to the requested permissions.
+  3. Authorization server redirects back to the application with an authorization code.
+  4. Application exchanges the authorization code for an access token.
+
+2. Implicit Flow
+Use Case: Single-page applications (SPAs) running in a browser.
+- Description: This flow is optimized for clients that run in a browser using JavaScript. It directly returns an access token without an intermediate authorization code.
+- Steps:
+  1. User is redirected to the authorization server.
+  2. User logs in and consents to the requested permissions.
+  3. Authorization server redirects back to the application with an access token in the URL fragment.
+
+3. Resource Owner Password Credentials Flow
+Use Case: Trusted applications where the user trusts the client with their credentials.
+- Description: This flow allows the application to directly obtain the user's credentials (username and password) and exchange them for an access token. It should only be used when other flows are not viable.
+- Steps:
+  1. User provides their credentials directly to the application.
+  2. Application sends the credentials to the authorization server.
+  3. Authorization server returns an access token.
+
+4. Client Credentials Flow
+Use Case: Service-to-service (machine-to-machine) communication.
+- Description: This flow is used by applications to obtain an access token outside the context of a user. It is typically used for backend services.
+- Steps:
+  1. Application authenticates with the authorization server using its client credentials (client ID and client secret).
+  2. Authorization server returns an access token.
+
+5. Device Authorization Flow
+Use Case: Devices with limited input capabilities (e.g., smart TVs, IoT devices).
+- Description: This flow allows users to authorize devices by visiting a URL on a secondary device (e.g., a smartphone) and entering a code.
+- Steps:
+  1. Device requests a device code and user code from the authorization server.
+  2. User is prompted to visit a URL and enter the user code.
+  3. User logs in and consents to the requested permissions.
+  4. Device polls the authorization server for the access token.
+
+6. Refresh Token Flow
+Use Case: Long-lived access to resources.
+- Description: This flow allows applications to obtain a new access token using a refresh token without requiring the user to log in again.
+- Steps:
+  1. Application sends the refresh token to the authorization server.
+  2. Authorization server returns a new access token (and optionally a new refresh token).
+
+Example Configuration for Authorization Code Flow
+
+#Microsoft Entra Admin Center
+
+1. Register Your Application:
+   - Go to Azure Active Directory > App registrations > New registration.
+   - Enter the application name and configure the redirect URI.
+
+2. Configure Authentication:
+   - In App registrations, select your application.
+   - Go to Authentication and configure the platform settings.
+
+3. Set Up API Permissions:
+   - In App registrations, select your application.
+   - Go to API permissions and add the necessary permissions.
+
+4. Generate Client Secret:
+   - In App registrations, select your application.
+   - Go to Certificates & secrets and generate a new client secret.
+
+Example Code Snippet (Node.js)
+
+Here’s an example using Node.js to implement the Authorization Code Flow:
+
+```javascript
+const msal = require('@azure/msal-node');
+
+const config = {
+  auth: {
+    clientId: 'YOUR_CLIENT_ID',
+    authority: 'https://login.microsoftonline.com/YOUR_TENANT_ID',
+    clientSecret: 'YOUR_CLIENT_SECRET'
+  }
+};
+
+const cca = new msal.ConfidentialClientApplication(config);
+
+const authCodeUrlParameters = {
+  scopes: ["user.read"],
+  redirectUri: "https://yourapp.com/callback"
+};
+
+// Get URL to sign user in and consent to scopes needed for application
+cca.getAuthCodeUrl(authCodeUrlParameters).then((response) => {
+  console.log(response);
+}).catch((error) => console.log(JSON.stringify(error)));
+
+const tokenRequest = {
+  code: 'AUTHORIZATION_CODE',
+  scopes: ["user.read"],
+  redirectUri: "https://yourapp.com/callback"
+};
+
+cca.acquireTokenByCode(tokenRequest).then((response) => {
+  console.log(response.accessToken);
+}).catch((error) => console.log(error));
+```
+
+By understanding and implementing these OAuth 2.0 flows, you can securely authorize access to your applications and APIs based on your specific use cases.
+
+If you have any specific questions or need further details, feel free to ask!
+

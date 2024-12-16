@@ -1,0 +1,87 @@
+How Can we do this using API to integrate OKTA SSO with MS Entra ID for users to login to the app without creating app in OKTA using API ? Give me in detailed steps on this
+
+
+Integrating Okta SSO with Microsoft Entra ID for users to log in to your app without creating an app in Okta using the API involves configuring both platforms to communicate securely. Here are the detailed steps:
+
+Steps to Integrate Okta SSO with Microsoft Entra ID
+
+1. Set Up Okta as an Identity Provider in Microsoft Entra ID
+   - Prerequisites: Ensure you have administrative access to both Okta and Microsoft Entra ID.
+
+2. Configure Okta as an Identity Provider in Microsoft Entra ID
+   - Sign in to the Microsoft Entra admin center.
+   - Navigate to Identity > External Identities > All identity providers.
+   - Click Add SAML identity provider.
+   - Enter a name for the identity provider.
+   - Use the following settings:
+     - Identity Provider Entity ID: `http://www.okta.com/<your-okta-org-id>`
+     - Single Sign-On URL: `https://<your-okta-domain>/sso/saml`
+     - Signing Certificate: Download the Okta certificate from the Okta Admin Console and upload it here.
+
+3. Configure Microsoft Entra ID as a Service Provider in Okta
+   - Go to the Okta Admin Console.
+   - Navigate to Security > Identity Providers.
+   - Click Add Identity Provider and select SAML 2.0.
+   - Enter the following details:
+     - Name: Microsoft Entra ID
+     - Single Sign-On URL: `https://login.microsoftonline.com/<tenant-ID>/saml2`
+     - Audience URI (SP Entity ID): `https://sts.windows.net/<tenant-ID>/`
+   - Upload the Microsoft Entra ID metadata file if available.
+
+4. Configure SAML Settings in Okta
+   - In the Okta Admin Console, navigate to the application you created.
+   - Go to the Sign On tab and click Edit.
+   - Configure the SAML settings to match those in Microsoft Entra ID:
+     - Single sign-on URL: `https://login.microsoftonline.com/<tenant-ID>/saml2`
+     - Audience URI (SP Entity ID): `https://sts.windows.net/<tenant-ID>/`
+   - Save the settings.
+
+5. Add Okta Identity Provider to a User Flow in Microsoft Entra ID
+   - In the Microsoft Entra admin center, go to Identity > External Identities > User flows.
+   - Select an existing user flow or create a new one.
+   - Under Identity providers, add Okta.
+   - Configure the user flow to include Okta as a sign-in option.
+
+6. Test the Integration
+   - Create a test user in Okta.
+   - Ensure the user can log in using their Okta credentials.
+   - Verify that the user is redirected to the Okta login page and then back to your application after successful authentication.
+
+Example Configuration
+
+#Okta Admin Console
+
+1. Add Identity Provider:
+   - Go to Security > Identity Providers.
+   - Click Add Identity Provider and select SAML 2.0.
+   - Enter the required details and save.
+
+2. Configure SAML Settings:
+   - Navigate to the application settings.
+   - Configure the SAML settings to match those in Microsoft Entra ID.
+
+#Microsoft Entra Admin Center
+
+1. Add Okta as an Identity Provider:
+   - Sign in to the Microsoft Entra admin center.
+   - Navigate to Identity > External Identities > All identity providers.
+   - Click Add SAML identity provider and enter the required details.
+
+2. Configure User Flow:
+   - Go to Identity > External Identities > User flows.
+   - Add Okta as an identity provider.
+
+Testing and Maintenance
+
+1. Test the Integration:
+   - Ensure users can log in using their Okta credentials.
+   - Verify the SSO flow works as expected.
+
+2. Monitor and Update:
+   - Regularly monitor the integration.
+   - Update configurations as needed to accommodate changes in your environment.
+
+By following these steps, you can integrate Okta SSO with Microsoft Entra ID using APIs, providing a seamless login experience for your users.
+
+If you have any specific questions or need further details, feel free to ask!
+

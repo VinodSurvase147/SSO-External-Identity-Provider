@@ -1,0 +1,94 @@
+
+
+Integrating Google SSO with Microsoft Entra ID without creating an app in the Google Developer Console or using keys directly is not typically feasible because the OAuth 2.0 and OpenID Connect protocols require client credentials (client ID and client secret) to authenticate and authorize applications. However, you can streamline the process by automating the creation and configuration of the necessary components using APIs.
+
+Here are the detailed steps to integrate Google SSO with Microsoft Entra ID, focusing on automating as much as possible:
+
+Steps to Integrate Google SSO with Microsoft Entra ID
+
+1. Set Up Google as an Identity Provider in Microsoft Entra ID
+   - Prerequisites: Ensure you have administrative access to both Google and Microsoft Entra ID.
+
+2. Automate Google Application Creation
+   - Use the Google Cloud API to automate the creation of the OAuth 2.0 client.
+
+3. Configure Google Federation in Microsoft Entra ID
+   - Use Microsoft Graph API to configure Google as an identity provider.
+
+Detailed Steps
+
+#Step 1: Automate Google Application Creation
+
+1. Enable Google Cloud APIs
+   - Ensure the Google Cloud APIs are enabled for your project.
+
+2. Create OAuth 2.0 Client via API
+   - Use the Google Cloud API to create an OAuth 2.0 client. Here’s an example using `curl`:
+
+   ```bash
+   curl -X POST "https://oauth2.googleapis.com/token" \
+   -H "Content-Type: application/json" \
+   -d '{
+     "client_id": "YOUR_CLIENT_ID",
+     "client_secret": "YOUR_CLIENT_SECRET",
+     "redirect_uris": ["https://login.microsoftonline.com/<tenant-ID>/oauth2/authresp"],
+     "grant_types": ["authorization_code"],
+     "response_types": ["code"],
+     "scope": ["openid", "email", "profile"]
+   }'
+   ```
+
+3. Retrieve Client ID and Secret
+   - Store the client ID and secret securely for use in Microsoft Entra ID.
+
+#Step 2: Configure Google Federation in Microsoft Entra ID
+
+1. Add Google as an Identity Provider
+   - Use the Microsoft Graph API to add Google as an identity provider. Here’s an example using `curl`:
+
+   ```bash
+
+   curl -X POST "https://graph.microsoft.com/v1.0/identityProviders" \
+   -H "Authorization: Bearer <your-access-token>" \
+   -H "Content-Type: application/json" \
+   -d '{
+     "displayName": "Google",
+     "identityProviderType": "Google",
+     "clientId": "YOUR_CLIENT_ID",
+     "clientSecret": "YOUR_CLIENT_SECRET",
+     "redirectUri": "https://login.microsoftonline.com/<tenant-ID>/oauth2/authresp"
+   }'
+   ```
+
+2. Configure User Flow
+   - Use the Microsoft Graph API to configure the user flow to include Google as a sign-in option. Here’s an example using `curl`:
+
+   ```bash
+   curl -X PATCH "https://graph.microsoft.com/v1.0/identity/b2cUserFlows/<user-flow-id>" \
+   -H "Authorization: Bearer <your-access-token>" \
+   -H "Content-Type: application/json" \
+   -d '{
+     "identityProviders": [
+       {
+         "identityProviderType": "Google",
+         "clientId": "YOUR_CLIENT_ID",
+         "clientSecret": "YOUR_CLIENT_SECRET"
+       }
+     ]
+   }'
+   ```
+
+Testing and Maintenance
+
+1. Test the Integration
+   - Ensure users can log in using their Google credentials.
+   - Verify the SSO flow works as expected.
+
+2. Monitor and Update
+   - Regularly monitor the integration.
+   - Update configurations as needed to accommodate changes in your environment.
+
+By following these steps, you can automate the integration of Google SSO with Microsoft Entra ID, providing a seamless login experience for your users.
+
+If you have any specific questions or need further details, feel free to ask!
+
